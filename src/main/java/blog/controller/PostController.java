@@ -8,6 +8,8 @@ import blog.model.User;
 import blog.services.PostService;
 import blog.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,32 @@ public class PostController {
         model.addAttribute("posts", list);
         return "posts";
     }
+    //API ENDPOINTS
+    /*
+    List all blogs, map them to the endpoint - /allposts
+Request method - GET; output - JSON format
+List three blogs - /topthreeposts
+Request method - GET; output - JSON format
+     */
+    @RequestMapping(value = "/topthreeposts",produces="application/json", method = RequestMethod.GET)
+    public ResponseEntity<List<Post>> lists3Posts() {
+        List<Post> top3posts = postService.firstThreePosts();
+        if (top3posts.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            // You many decide to return HttpStatus.NOT_FOUND
+        }
+        return new ResponseEntity<List<Post>>(top3posts, HttpStatus.OK);
+    }
+    @RequestMapping(value = "/allposts",produces="application/json", method = RequestMethod.GET)
+    public ResponseEntity<List<Post>> listsAllPosts() {
+        List<Post> posts = postService.findAll();
+        if (posts.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            // You many decide to return HttpStatus.NOT_FOUND
+        }
+        return new ResponseEntity<List<Post>>(posts, HttpStatus.OK);
+    }
+
 
     @RequestMapping("/posts/create")
     public String createPost() {
